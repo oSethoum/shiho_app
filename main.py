@@ -2,7 +2,6 @@ import customtkinter as ctk
 import sqlite3
 
 import bcrypt
-from db import init_db
 from tkinter import messagebox
 
 # --- Global user variable ---
