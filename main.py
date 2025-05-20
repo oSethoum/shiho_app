@@ -2,7 +2,6 @@ import customtkinter as ctk
 import sqlite3
 
 import bcrypt
-from db import init_db
 from tkinter import messagebox
 
 # --- Global user variable ---
@@ -78,7 +77,6 @@ class MainFrame(ctk.CTkFrame):
 class App(ctk.CTk):
     def __init__(self):
         super().__init__()
-        init_db()
         self.title("Analyst Login App")
         self.geometry("500x400")
         ctk.set_appearance_mode("System")
@@ -96,6 +94,5 @@ class App(ctk.CTk):
 
 # --- Main ---
 if __name__ == "__main__":
-    init_db()
     app = App()
     app.mainloop()
