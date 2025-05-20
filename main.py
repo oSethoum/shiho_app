@@ -22,6 +22,7 @@ class LoginFrame(ctk.CTkFrame):
         self.password_entry.pack(pady=10)
 
         ctk.CTkButton(self, text="Login", command=self.login, width=200, height=40, font=ctk.CTkFont(size=16)).pack(pady=20)
+        ctk.CTkButton(self, text="Sign up", command=self.signup, width=200, height=40, font=ctk.CTkFont(size=16)).pack(pady=20)
 
     def login(self):
         global current_user
@@ -40,6 +41,27 @@ class LoginFrame(ctk.CTkFrame):
             return
 
         messagebox.showerror("Login Failed", "Invalid analyst ID or password.")
+
+    def signup(self):
+        analyst_id = self.analyst_entry.get()
+        password = self.password_entry.get()
+
+        if not analyst_id or not password:
+            messagebox.showerror("Signup Failed", "Please fill in all fields.")
+            return
+
+        conn = sqlite3.connect("users.db")
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM users WHERE analyst_id=?", (analyst_id,))
+        if cur.fetchone():
+            messagebox.showerror("Signup Failed", "Analyst ID already exists.")
+            conn.close()
+            return
+        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        cur.execute("INSERT INTO users (analyst_id, password) VALUES (?, ?)", (analyst_id, hashed_password))
+        conn.commit()
+        conn.close()
+        messagebox.showinfo("Signup Success", "User added.")
 
 # --- Main Frame ---
 class MainFrame(ctk.CTkFrame):
