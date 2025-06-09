@@ -8,7 +8,8 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            analyst_id TEXT UNIQUE, 
+            analyst_id TEXT UNIQUE,
+            name TEXT,
             password TEXT
         )
     """)
@@ -19,17 +20,21 @@ def init_db():
     
     # object list 
     data = [
-        {"analyst_id": "A1", "password": "passA1"},
-        {"analyst_id": "A2", "password": "passA2"},
-        {"analyst_id": "A3", "password": "passA3"},
+        {"analyst_id": "A1","name":"Name 1", "password": "passA1"},
+        {"analyst_id": "A2","name":"Name 2", "password": "passA2"},
+        {"analyst_id": "A3","name":"Name 3", "password": "passA3"},
     ]
 
 
     for item in data:
         analyst_id = item["analyst_id"]
         password = item["password"]
+        name = item["name"]
         hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-        cur.execute("INSERT OR IGNORE INTO users (analyst_id, password) VALUES (?, ?)", (analyst_id, hashed))
+        cur.execute("INSERT OR IGNORE INTO users (analyst_id, name, password) VALUES (?,?,?)", (analyst_id, name, hashed))
     
     conn.commit()
     conn.close()
+
+
+init_db()

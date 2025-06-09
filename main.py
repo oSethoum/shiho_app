@@ -16,6 +16,9 @@ class LoginFrame(ctk.CTkFrame):
         ctk.CTkLabel(self, text="Login", font=ctk.CTkFont(size=28, weight="bold")).pack(pady=20)
         self.analyst_entry = ctk.CTkEntry(self, placeholder_text="Analyst ID", width=300, height=40, font=ctk.CTkFont(size=16))
         self.analyst_entry.pack(pady=10)
+      
+        self.name_entry = ctk.CTkEntry(self, placeholder_text="Name", width=300, height=40, font=ctk.CTkFont(size=16))
+        self.name_entry.pack(pady=10)
 
         self.password_entry = ctk.CTkEntry(self, placeholder_text="Password", show="*", width=300, height=40, font=ctk.CTkFont(size=16))
         self.password_entry.pack(pady=10)
@@ -34,8 +37,8 @@ class LoginFrame(ctk.CTkFrame):
         result = cur.fetchone()
         conn.close()
 
-        if result and bcrypt.checkpw(password.encode(), result[2].encode()):
-            current_user = {"id": result[0], "analyst_id": result[1]}
+        if result and bcrypt.checkpw(password.encode(), result[3].encode()):
+            current_user = {"id": result[0], "analyst_id": result[1], "name":result[2]}
             self.app.show_main_frame()
             return
 
@@ -43,9 +46,10 @@ class LoginFrame(ctk.CTkFrame):
 
     def signup(self):
         analyst_id = self.analyst_entry.get()
+        name = self.name_entry.get()
         password = self.password_entry.get()
 
-        if not analyst_id or not password:
+        if not analyst_id or not password or not name:
             messagebox.showerror("Signup Failed", "Please fill in all fields.")
             return
 
@@ -57,7 +61,7 @@ class LoginFrame(ctk.CTkFrame):
             conn.close()
             return
         hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-        cur.execute("INSERT INTO users (analyst_id, password) VALUES (?, ?)", (analyst_id, hashed_password))
+        cur.execute("INSERT INTO users (analyst_id, name, password) VALUES (?, ?)", (analyst_id, name, hashed_password))
         conn.commit()
         conn.close()
         messagebox.showinfo("Signup Success", "User added.")
@@ -71,7 +75,7 @@ class MainFrame(ctk.CTkFrame):
 
     def update_user(self):
         global current_user
-        self.label.configure(text=f"Welcome, {current_user['analyst_id']}!")
+        self.label.configure(text=f"Welcome, {current_user['name']}!")
 
 # --- Main App ---
 class App(ctk.CTk):
